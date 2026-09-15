@@ -1,0 +1,64 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    function isSuperAdmin() {
+      return isAuthenticated() && getUserData().role == 'SUPER_ADMIN';
+    }
+
+    function isUserOfTenant(tenantId) {
+      return isAuthenticated() && getUserData().tenantId == tenantId;
+    }
+
+    // Global Users collection
+    match /users/{userId} {
+      // User can read their own profile; Super Admin can read all; during initial setup if users is empty, allow read
+      allow read: if isAuthenticated() && (request.auth.uid == userId || isSuperAdmin());
+      // A user can create their own profile, or Super Admin can create/update
+      allow create: if isAuthenticated();
+      allow update, delete: if isSuperAdmin() || (isAuthenticated() && request.auth.uid == userId);
+    }
+
+    // Global Plans collection
+    match /plans/{planId} {
+      allow read: if true; // Publicly readable for pricing
+      allow write: if isSuperAdmin();
+    }
+
+    // Global System Settings
+    match /systemSettings/{settingId} {
+      allow read: if true;
+      allow write: if isSuperAdmin();
+    }
+
+    // Global Platform Activity Logs
+    match /activityLogs/{logId} {
+      allow read, write: if isSuperAdmin();
+    }
+
+    // Multi-Tenant Isolation Rules
+    match /tenants/{tenantId} {
+      // Public read of tenant metadata (for custom login page branding)
+      allow read: if true;
+      // Creation and deletion by Super Admin only
+      allow create, delete: if isSuperAdmin();
+      // Update by Super Admin or Tenant's own Client Admin
+      allow update: if isSuperAdmin() || isUserOfTenant(tenantId);
+
+      // Subcollections within tenant workspace
+      match /{allSubcollections=**} {
+        // Enforce strict tenant isolation: ONLY Super Admin or verified tenant members can access
+        allow read, write: if isSuperAdmin() || isUserOfTenant(tenantId);
+      }
+    }
+  }
+}

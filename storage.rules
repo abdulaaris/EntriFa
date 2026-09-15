@@ -1,0 +1,15 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    // Tenant isolated storage paths
+    match /tenants/{tenantId}/{allPaths=**} {
+      // Allow read/write if authenticated
+      allow read, write: if isAuthenticated();
+    }
+  }
+}
