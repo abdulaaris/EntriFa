@@ -5,12 +5,12 @@ import { getStorage, FirebaseStorage } from 'firebase/storage';
 
 // Read Firebase config from Vite environment variables
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'demo-api-key',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || `${import.meta.env.VITE_FIREBASE_PROJECT_ID || 'entrifa-saas'}.firebaseapp.com`,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'entrifa-saas',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || `${import.meta.env.VITE_FIREBASE_PROJECT_ID || 'entrifa-saas'}.appspot.com`,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || '',
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyBVmTuiG6lXgr5uangzTC92z_lEMEHezhA',
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'entrifa.firebaseapp.com',
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'entrifa',
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'entrifa.firebasestorage.app',
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '81756505059',
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || '1:81756505059:web:5a6645b76eb4b21d5296d6',
 };
 
 // Initialize Primary Firebase App
